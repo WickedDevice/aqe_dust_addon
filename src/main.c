@@ -31,7 +31,8 @@ void setup(void);
 
 uint8_t macaddr[6];
 
-#define DUST_READING_INTERVAL_MS 30000L
+#define DUST_READING_INTERVAL_MS  30000L
+#define DUST_READING_INTERVAL_8US (DUST_READING_INTERVAL_MS * 125L)
 
 void main(void) __attribute__((noreturn));
 void main(void) {
@@ -103,8 +104,19 @@ void onRequestService(void){
                 break;
             case EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT_OFFSET:
             case EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET:
-                responseValue = get_dust_occupancy();
-                big_endian_copy_uint32_to_buffer(responseValue, response);
+                responseValue = get_dust_occupancy(); // num 8us intervals low in 30s interval
+                if(sensor_field_offset == EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET){
+                    response_length = 8;
+                }
+                else{ // if sensor_field_offset == EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT
+                    // independent is ratio of time low to interval duration
+                    responseValue *= get_independent_scaler_inverse(sensor_index); // scale up numerator
+                    responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
+                    // value should be something like XXXY representing XXX.Y%
+                    // for example if the value is 346 that means 34.6% occupancy
+                    big_endian_copy_uint32_to_buffer(responseValue, response);
+                }
+
                 break;
             default: // assume its an access to the mapping table entries
                 sensor_block_relative_address = (sensor_field_offset - EGG_BUS_SENSOR_BLOCK_COMPUTED_VALUE_MAPPING_TABLE_BASE_OFFSET);
@@ -184,7 +196,7 @@ void setup(void){
     twi_init();
 
     dust_init();
-    timebase_reset();
+    timebase_init();
     icp_init();
 
     POWER_LED_OFF();

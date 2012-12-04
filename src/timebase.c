@@ -14,7 +14,7 @@
 uint32_t  _timestamp_ms = 0;
 volatile uint8_t   _timebase_update_flag = 0;
 
-void timebase_reset(){
+void timebase_init(){
     // set up the timer0 overflow interrupt for 1ms
     TCNT0  = TIMER0_1MS_OVERFLOW_TCNT;
     TIMSK0 = _BV(TOIE0);
@@ -22,6 +22,10 @@ void timebase_reset(){
     // start timer0
     TCCR0A = TIMER0_1MS_OVERFOW_PRESCALER;
 
+    timebase_reset();
+}
+
+void timebase_reset(){
     _timestamp_ms = 0;
     _timebase_update_flag = 0;
 }

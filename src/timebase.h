@@ -12,6 +12,7 @@
 #define TIMER0_1MS_OVERFOW_PRESCALER 3     // 8MHz / 64 = 125 kHz
 #define TIMER0_1MS_OVERFLOW_TCNT     131   // 255 - 131 + 1 = 125 ticks
 
+void timebase_init();
 void timebase_reset();
 void timebase_update();
 uint32_t timebase_now();
