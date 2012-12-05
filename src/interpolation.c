@@ -14,8 +14,8 @@
 #define INTERPOLATION_TERMINATOR 0xff
 
 // these are the conversion factors required to turn into floating point values (multiply table values by these)
-const float x_scaler[EGG_BUS_NUM_HOSTED_SENSORS] = {0.00051f};
-const float y_scaler[EGG_BUS_NUM_HOSTED_SENSORS] = {1.6f};
+const float x_scaler[EGG_BUS_NUM_HOSTED_SENSORS] = {0.07f};
+const float y_scaler[EGG_BUS_NUM_HOSTED_SENSORS] = {52.0f};
 const float independent_scaler[EGG_BUS_NUM_HOSTED_SENSORS] = {0.001f};
 const uint32_t independent_scaler_inverse[EGG_BUS_NUM_HOSTED_SENSORS] = { 1000 };
 
@@ -23,23 +23,28 @@ const uint32_t independent_scaler_inverse[EGG_BUS_NUM_HOSTED_SENSORS] = { 1000 }
 uint8_t getTableValue(uint8_t sensor_index, uint8_t table_index, uint8_t get_x_or_get_y){
 
     // the values MUST be provided in ascending order of x-value
-    const uint8_t voc_ppb[][2] = {
-            {254,19},
-            {195,29},
-            {157,43},
-            {136,54},
-            {117,68},
-            {97,94},
-            {78,136},
-            {58,221},
-            {53,254},
+    const uint8_t dust_ppb[][2] = {
+            {1,0},
+            {28,19},
+            {56,39},
+            {81,58},
+            {104,77},
+            {126,96},
+            {145,115},
+            {162,135},
+            {178,154},
+            {193,173},
+            {206,193},
+            {219,212},
+            {230,231},
+            {242,251},
             {INTERPOLATION_TERMINATOR, INTERPOLATION_TERMINATOR}
     };
 
-    // sensor index 0 is the voc sensor
+    // sensor index 0 is the dust sensor
     uint8_t return_value = 0;
     if(sensor_index == 0){
-        return_value = voc_ppb[table_index][get_x_or_get_y];
+        return_value = dust_ppb[table_index][get_x_or_get_y];
     }
 
     return return_value;

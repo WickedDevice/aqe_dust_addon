@@ -94,7 +94,7 @@ void onRequestService(void){
                 memcpy(&responseValue, get_p_x_scaler(sensor_index), 4);
                 big_endian_copy_uint32_to_buffer(responseValue, response);
                 break;
-            case EGG_BUS_SENSOR_BLOCK_TABLE_Y_SCALER_OFFSET:
+                case EGG_BUS_SENSOR_BLOCK_TABLE_Y_SCALER_OFFSET:
                 memcpy(&responseValue, get_p_y_scaler(sensor_index), 4);
                 big_endian_copy_uint32_to_buffer(responseValue, response);
                 break;
