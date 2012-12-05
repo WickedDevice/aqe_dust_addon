@@ -12,16 +12,13 @@
 #include "utility.h"
 
 static uint16_t egg_bus_read_address = 0;
-static uint8_t egg_bus_sensor_mapping_table[] = {
-        0, // index 0 [VOC] is on ADC0
-};
 
-char egg_bus_sensor_type_0[] PROGMEM = "VOC";
+char egg_bus_sensor_type_0[] PROGMEM = "Dust";
 PGM_P egg_bus_sensor_types[] PROGMEM = {
         egg_bus_sensor_type_0
 };
 
-char egg_bus_sensor_units_0[] PROGMEM = "ppm";
+char egg_bus_sensor_units_0[] PROGMEM = "pcs/283ml";
 PGM_P egg_bus_sensor_units[] PROGMEM = {
         egg_bus_sensor_units_0
 };
@@ -34,14 +31,6 @@ uint16_t egg_bus_get_read_address(){
 
 void egg_bus_set_read_address(uint16_t read_address){
     egg_bus_read_address = read_address;
-}
-
-uint8_t egg_bus_map_to_analog_pin(uint8_t sensor_index){
-    uint8_t analog_pin_number = 0;
-    if(sensor_index < EGG_BUS_NUM_HOSTED_SENSORS){
-        analog_pin_number = egg_bus_sensor_mapping_table[sensor_index];
-    }
-    return analog_pin_number;
 }
 
 void egg_bus_get_sensor_type(uint8_t sensor_index, char * target_buffer){
