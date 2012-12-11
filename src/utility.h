@@ -9,7 +9,7 @@
 #define UTILITY_H_
 
 /* TWI constants and prototypes */
-#define TWI_SLAVE_ADDRESS               3   // must be less than 127
+#define TWI_SLAVE_ADDRESS               6   // must be less than 127
 #define TWI_BUFFER_SIZE                 8
 #define TWI_GET_NUM_SENSORS_ATTACHED    0x00 // no parameters
 #define TWI_GET_RAW_SENSOR_VALUE        0x11 // parameter = sensor index
