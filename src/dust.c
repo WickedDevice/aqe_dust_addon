@@ -9,32 +9,34 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "dust.h"
-#include "icp.h"
 
-uint8_t dust_occupancy_read_idx = 0;
-uint32_t dust_occupancy[2] = {0xffffffff, 0xffffffff};
+uint32_t num_high_samples;
+uint32_t num_low_samples;
 
 void dust_init(){
-    dust_occupancy[0] = 0xffffffff;
-    dust_occupancy[1] = 0xffffffff;
+    // input with pullups disabled
+    DUST_DDR_REG = ~_BV(DUST_PIN);
+    DUST_PORT_REG = ~_BV(DUST_PIN);
+
+    dust_clear();
 }
 
 uint32_t get_dust_occupancy(){
-    return dust_occupancy[dust_occupancy_read_idx];
-}
-
-void dust_enq(){
-    uint8_t dust_occupancy_write_idx;
-    dust_occupancy_read_idx = 1 - dust_occupancy_read_idx;  // change the read index
-    dust_occupancy_write_idx = 1 - dust_occupancy_read_idx; // infer the write index
-    dust_occupancy[dust_occupancy_write_idx] = 0;           // reset the write index value to zero
+    uint32_t denominator = (num_high_samples + num_low_samples);
+    denominator /= 10000;
+    return num_low_samples / denominator;
 }
 
 void dust_process(){
-    uint8_t dust_occupancy_write_idx = 1 - dust_occupancy_read_idx;
-    icp_sample_t sample = icp_rx();
-    const icp_sample_t EMPTY_Q = (icp_sample_t) -1;
-    if(sample != EMPTY_Q){
-        dust_occupancy[dust_occupancy_write_idx] += sample;
+    if(DUST_IS_HIGH){
+        num_high_samples++;
     }
+    else{
+        num_low_samples++;
+    }
+}
+
+void dust_clear(){
+    num_high_samples = 0;
+    num_low_samples = 0;
 }

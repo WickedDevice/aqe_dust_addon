@@ -23,7 +23,7 @@ PGM_P egg_bus_sensor_units[] PROGMEM = {
         egg_bus_sensor_units_0
 };
 
-uint32_t EEMEM egg_bus_sensor_r0[EGG_BUS_NUM_HOSTED_SENSORS]  = { 500000L }; // values in ohms
+uint32_t EEMEM egg_bus_sensor_r0[EGG_BUS_NUM_HOSTED_SENSORS]  = { 1L }; // values in ohms
 
 uint16_t egg_bus_get_read_address(){
     return egg_bus_read_address;

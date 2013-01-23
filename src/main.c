@@ -19,8 +19,6 @@
 #include "mac.h"
 #include "interpolation.h"
 #include "dust.h"
-#include "timebase.h"
-#include "icp.h"
 
 //#define INCLUDE_DEBUG_REGISTERS
 
@@ -42,13 +40,6 @@ void main(void) {
     // This loop runs forever
     // it can be interrupted at any point by a TWI event
     for (;;) {
-
-        timebase_update();
-        if(timebase_now() > DUST_READING_INTERVAL_MS){
-            timebase_reset();
-            dust_enq();
-        }
-
         dust_process();
     }
 }
@@ -105,18 +96,13 @@ void onRequestService(void){
             case EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT_OFFSET:
             case EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET:
                 responseValue = get_dust_occupancy(); // num 8us intervals low in 30s interval
-                if(sensor_field_offset == EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET){
-                    response_length = 8;
-                }
-                else{ // if sensor_field_offset == EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT
-                    // independent is ratio of time low to interval duration
-                    responseValue *= get_independent_scaler_inverse(sensor_index); // scale up numerator
-                    responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
-                    // value should be something like XXXY representing XXX.Y%
-                    // for example if the value is 346 that means 34.6% occupancy
-                    big_endian_copy_uint32_to_buffer(responseValue, response);
-                }
-
+                dust_clear();
+                // independent is ratio of time low to interval duration
+                //responseValue *= get_independent_scaler_inverse(sensor_index); // scale up numerator
+                //responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
+                // value should be something like XXXY representing XXX.Y%
+                // for example if the value is 346 that means 34.6% occupancy
+                big_endian_copy_uint32_to_buffer(responseValue, response);
                 break;
             default: // assume its an access to the mapping table entries
                 sensor_block_relative_address = (sensor_field_offset - EGG_BUS_SENSOR_BLOCK_COMPUTED_VALUE_MAPPING_TABLE_BASE_OFFSET);
@@ -196,8 +182,6 @@ void setup(void){
     twi_init();
 
     dust_init();
-    timebase_init();
-    icp_init();
 
     POWER_LED_OFF();
 
