@@ -19,6 +19,7 @@
 #include "mac.h"
 #include "interpolation.h"
 #include "dust.h"
+#include "timer.h"
 
 //#define INCLUDE_DEBUG_REGISTERS
 
@@ -40,7 +41,13 @@ void main(void) {
     // This loop runs forever
     // it can be interrupted at any point by a TWI event
     for (;;) {
-        dust_process();
+        dust_process(); // accumulates the dust variables
+
+        if(timer_expired()){
+            STATUS_LED_TOGGLE();
+            dust_clear();
+            timer_restart();
+        }
     }
 }
 
@@ -96,7 +103,6 @@ void onRequestService(void){
             case EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT_OFFSET:
             case EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET:
                 responseValue = get_dust_occupancy(); // num 8us intervals low in 30s interval
-                dust_clear();
                 // independent is ratio of time low to interval duration
                 //responseValue *= get_independent_scaler_inverse(sensor_index); // scale up numerator
                 //responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
@@ -182,6 +188,7 @@ void setup(void){
     twi_init();
 
     dust_init();
+    timer_init();
 
     POWER_LED_OFF();
 
