@@ -33,10 +33,12 @@ uint32_t get_dust_occupancy(){
     denominator /= 10000;
     ret_value = num_low_samples[dust_read_index()] / denominator;
 
-    // offset compensation
-    offset = ret_value / 100;
-    offset *= 2;
-    ret_value -= offset;
+    if(ret_value > 0 && ret_value < 10000){
+        // offset compensation
+        offset = ret_value / 100;
+        offset *= 2;
+        ret_value -= offset;
+    }
 
     if(ret_value > 10000L){
         ret_value = 10000L;
