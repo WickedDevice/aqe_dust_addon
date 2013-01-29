@@ -29,8 +29,15 @@ void dust_init(){
 uint32_t get_dust_occupancy(){
     uint32_t ret_value = 0;
     uint32_t denominator = num_high_samples[dust_read_index()] + num_low_samples[dust_read_index()];
+    uint32_t offset = 0;
     denominator /= 10000;
     ret_value = num_low_samples[dust_read_index()] / denominator;
+
+    // offset compensation
+    offset = ret_value / 100;
+    offset *= 2;
+    ret_value -= offset;
+
     if(ret_value > 10000L){
         ret_value = 10000L;
     }
