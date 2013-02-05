@@ -24,7 +24,7 @@ uint8_t getTableValue(uint8_t sensor_index, uint8_t table_index, uint8_t get_x_o
 
     // the values MUST be provided in ascending order of x-value
     const uint8_t dust_ppb[][2] = {
-            {1,0},
+            {0,0},
             {28,19},
             {56,39},
             {81,58},
