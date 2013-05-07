@@ -102,7 +102,14 @@ void onRequestService(void){
                 break;
             case EGG_BUS_SENSOR_BLOCK_MEASURED_INDEPENDENT_OFFSET:
             case EGG_BUS_SENSOR_BLOCK_RAW_VALUE_OFFSET:
-                responseValue = get_dust_occupancy(); // num 8us intervals low in 30s interval
+                response_length = 20;
+                //the following returns the best value and the associated low side resistance
+                big_endian_copy_uint32_to_buffer((uint32_t) 1, response);
+                big_endian_copy_uint32_to_buffer((uint32_t) 1, response + 4 );
+                big_endian_copy_uint32_to_buffer((uint32_t) get_dust_occupancy() + 1, response + 8 );
+                big_endian_copy_uint32_to_buffer((uint32_t) 1, response + 12 );
+                big_endian_copy_uint32_to_buffer((uint32_t) 1, response + 16 );
+
                 // independent is ratio of time low to interval duration
                 //responseValue *= get_independent_scaler_inverse(sensor_index); // scale up numerator
                 //responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
