@@ -115,7 +115,7 @@ void onRequestService(void){
                 //responseValue /= DUST_READING_INTERVAL_8US;                    // divide by denominator
                 // value should be something like XXXY representing XXX.Y%
                 // for example if the value is 346 that means 34.6% occupancy
-                big_endian_copy_uint32_to_buffer(responseValue, response);
+                //big_endian_copy_uint32_to_buffer(responseValue, response);
                 break;
             default: // assume its an access to the mapping table entries
                 sensor_block_relative_address = (sensor_field_offset - EGG_BUS_SENSOR_BLOCK_COMPUTED_VALUE_MAPPING_TABLE_BASE_OFFSET);
